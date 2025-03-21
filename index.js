@@ -1,17 +1,17 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const cors = require('cors')
+app.use(cors())
+
+app.use(express.json())
+app.use(express.static('dist'))
+
+const morgan = require('morgan')
+morgan.token('body', (request, result) => JSON.stringify(request.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 const Person = require('./models/person')
-const cors = require('cors')
-const morgan = require('morgan')
-
-morgan.token('body', (request, result) => JSON.stringify(request.body))
-
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-app.use(express.json())
-app.use(cors())
-app.use(express.static('dist'))
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
